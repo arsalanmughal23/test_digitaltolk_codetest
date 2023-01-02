@@ -55,7 +55,7 @@ class BookingRepository extends BaseRepository
      * @param $user_id
      * @return array
      */
-    public function getUsersJobs($user_id)
+    public function getUserWithJobs($user_id)
     {
         $cuser = User::find($user_id);
         $usertype = '';
@@ -89,7 +89,7 @@ class BookingRepository extends BaseRepository
      * @param $user_id
      * @return array
      */
-    public function getUsersJobsHistory($user_id, Request $request)
+    public function getUserWithJobsHistory($user_id, Request $request)
     {
         $page = $request->get('page');
         if (isset($page)) {
@@ -283,7 +283,7 @@ class BookingRepository extends BaseRepository
      * @param $data
      * @return mixed
      */
-    public function storeJobEmail($data)
+    public function saveJobWithSendEmail($data)
     {
         $user_type = $data['user_type'];
         $job = Job::findOrFail(@$data['user_email_job_id']);
@@ -1412,7 +1412,7 @@ class BookingRepository extends BaseRepository
             /*@todo
                 add flash message here.
             */
-            $jobs = $this->getPotentialJobs($cuser);
+            $jobs = $this->saveJobWithSendEmail($cuser);
             $response = array();
             $response['list'] = json_encode(['jobs' => $jobs, 'job' => $job], true);
             $response['status'] = 'success';
@@ -1482,7 +1482,7 @@ class BookingRepository extends BaseRepository
         return $response;
     }
 
-    public function cancelJobAjax($data, $user)
+    public function cancelJob($data, $user)
     {
         $response = array();
         /*@todo
@@ -1556,7 +1556,7 @@ class BookingRepository extends BaseRepository
     }
 
     /*Function to get the potential jobs for paid,rws,unpaid translators*/
-    public function getPotentialJobs($cuser)
+    public function getJobsAccordingToUserExperience($cuser)
     {
         $cuser_meta = $cuser->userMeta;
         $job_type = 'unpaid';
@@ -1592,7 +1592,7 @@ class BookingRepository extends BaseRepository
         return $job_ids;
     }
 
-    public function endJob($post_data)
+    public function closeJob($post_data)
     {
         $completeddate = date('Y-m-d H:i:s');
         $jobid = $post_data["job_id"];
@@ -2110,7 +2110,7 @@ class BookingRepository extends BaseRepository
         return ['success', 'Changes saved'];
     }
 
-    public function reopen($request)
+    public function reopenJob($request)
     {
         $jobid = $request['jobid'];
         $userid = $request['userid'];

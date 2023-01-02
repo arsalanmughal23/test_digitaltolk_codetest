@@ -37,7 +37,7 @@ class BookingController extends Controller
     {
         if($user_id = $request->get('user_id')) {
 
-            $response = $this->repository->getUsersJobs($user_id);
+            $response = $this->repository->getUserWithJobs($user_id);
 
         }
         elseif($request->__authenticatedUser->user_type == env('ADMIN_ROLE_ID') || $request->__authenticatedUser->user_type == env('SUPERADMIN_ROLE_ID'))
@@ -96,7 +96,7 @@ class BookingController extends Controller
         $adminSenderEmail = config('app.adminemail');
         $data = $request->all();
 
-        $response = $this->repository->storeJobEmail($data);
+        $response = $this->repository->saveJobWithSendEmail($data);
 
         return response($response);
     }
@@ -109,7 +109,7 @@ class BookingController extends Controller
     {
         if($user_id = $request->get('user_id')) {
 
-            $response = $this->repository->getUsersJobsHistory($user_id, $request);
+            $response = $this->repository->getUserWithJobsHistory($user_id, $request);
             return response($response);
         }
 
@@ -149,7 +149,7 @@ class BookingController extends Controller
         $data = $request->all();
         $user = $request->__authenticatedUser;
 
-        $response = $this->repository->cancelJobAjax($data, $user);
+        $response = $this->repository->cancelJob($data, $user);
 
         return response($response);
     }
@@ -158,11 +158,11 @@ class BookingController extends Controller
      * @param Request $request
      * @return mixed
      */
-    public function endJob(Request $request)
+    public function closeJob(Request $request)
     {
         $data = $request->all();
 
-        $response = $this->repository->endJob($data);
+        $response = $this->repository->closeJob($data);
 
         return response($response);
 
@@ -182,12 +182,12 @@ class BookingController extends Controller
      * @param Request $request
      * @return mixed
      */
-    public function getPotentialJobs(Request $request)
+    public function getJobsAccordingToUserExperience(Request $request)
     {
         $data = $request->all();
         $user = $request->__authenticatedUser;
 
-        $response = $this->repository->getPotentialJobs($user);
+        $response = $this->repository->getJobsAccordingToUserExperience($user);
 
         return response($response);
     }
@@ -254,10 +254,10 @@ class BookingController extends Controller
         return response('Record updated!');
     }
 
-    public function reopen(Request $request)
+    public function reopenJob(Request $request)
     {
         $data = $request->all();
-        $response = $this->repository->reopen($data);
+        $response = $this->repository->reopenJob($data);
 
         return response($response);
     }
@@ -288,6 +288,7 @@ class BookingController extends Controller
             return response(['success' => 'SMS sent']);
         } catch (\Exception $e) {
             return response(['success' => $e->getMessage()]);
+            // return response(['error' => $e->getMessage()]);
         }
     }
 
